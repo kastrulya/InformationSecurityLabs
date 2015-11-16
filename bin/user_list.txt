@@ -1,0 +1,2 @@
+admin admin 1 0 ADMIN
+user us 1 0 USER
