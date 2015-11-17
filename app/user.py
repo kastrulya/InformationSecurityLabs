@@ -4,7 +4,7 @@ __author__ = 'bubble'
 class User:
     """ class User """
 
-    def __init__(self, name, password, enabled, password_restriction, role):
+    def __init__(self, name, password, enabled = True, password_restriction = False, role = "USER"):
         self.name = name
         self.password = password
         self.enabled = bool(int(enabled))

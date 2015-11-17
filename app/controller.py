@@ -23,14 +23,18 @@ class Controller:
             user = user_service.authorize(name, password)
             self.current_session.start_session(user)
             if self.current_session.current_user.role == "ADMIN":
-                self.app_view.admin_form()
+                users = user_service.user_store.get_users()
+                self.app_view.admin_form(self.logout, self.change_password,
+                                         users, self.admin_save_changes,
+                                         self.admin_add_user)
             else:
                 self.app_view.user_form(self.logout, self.change_password)
         except ValueError as e:
             self.app_view.show_message(e.message)
 
     def logout(self):
-        pass
+        self.current_session.stop_session()
+
 
     def change_password(self):
         data = self.app_view.get_data_change_password()
@@ -38,7 +42,21 @@ class Controller:
         new_password = data["new_password"]
         try:
             user_service.change_password(
-            self.current_session.current_user, old_password,
-            new_password)
+                self.current_session.current_user,
+                old_password,
+                new_password)
+        except ValueError as e:
+            self.app_view.show_message(e.message)
+
+    def admin_save_changes(self):
+        changes = self.app_view.get_user_changes()
+        blocked_user = changes["blocked_users"]
+        restriction_password = changes["restriction_password_users"]
+        user_service.save_changes(blocked_user, restriction_password)
+
+    def admin_add_user(self):
+        try:
+            name = self.app_view.get_new_user_data()
+            user_service.add_new_user(name)
         except ValueError as e:
             self.app_view.show_message(e.message)

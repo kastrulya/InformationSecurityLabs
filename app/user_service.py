@@ -1,14 +1,18 @@
-__author__ = 'bubble'
 # import datastore
 from DAO import file_user_DAO_impl
+from user import User
+
+__author__ = 'bubble'
+
 
 user_store = file_user_DAO_impl.FileUserDAO()
-user_store.start_connection()
+# user_store.start_connection()
 
 
 def authorize(username="", password=""):
-    if user_store.find_user_by_name(username):
-        find_user = user_store.find_user_by_name(username)
+    users = user_store.get_users()
+    if user_store.find_user_by_name(username, users):
+        find_user = user_store.find_user_by_name(username, users)
         if find_user.password == password:
             return find_user
         else:
@@ -32,13 +36,25 @@ def is_password_valid(user, new_password):
     return valid
 
 
-def save_changes():
-    pass
+def save_changes(blocked_user, restriction_password_user):
+    for name in blocked_user:
+        user_store.update_user_field(
+            name,
+            "enabled",
+            not blocked_user[name].get()
+        )
+
+    for name in restriction_password_user:
+        user_store.update_user_field(
+            name,
+            "password_restriction",
+            restriction_password_user[name].get()
+        )
 
 
-def add_new_user():
-    pass
-
+def add_new_user(name):
+    user = User(name, name)
+    user_store.add_user(user)
 
 def logout():
     pass

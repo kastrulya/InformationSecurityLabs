@@ -13,8 +13,8 @@ class FileUserDAO(UserDAO):
         self.delimiter_users = '\n'
         self.delimiter_data_user = ' '
 
-    def start_connection(self):
-        self.users = self.get_users()
+    # def start_connection(self):
+    #     self.users = self.get_users()
 
     def get_data_users(self):
         data = common.files.read_from_file(self.path_storage)
@@ -40,28 +40,34 @@ class FileUserDAO(UserDAO):
         return all_users
 
     def add_user(self, user):
-        if self.find_user_by_name(user.name):
+        users = self.get_users()
+        if self.find_user_by_name(user.name, users):
             raise ValueError('Such user exists')
-        self.users.append(user)
+        users.append(user)
+        self.save_changes(users)
 
-    def find_user_by_name(self, username):
-        founded_user = [user for user in self.users if user.name == username]
+    def find_user_by_name(self, username, users):
+        founded_user = [user for user in users if user.name == username]
         if len(founded_user):
             return founded_user[0]
         return
 
     def update_user_field(self, username, field, new_data):
-        user = self.find_user_by_name(username)
+        users = self.get_users()
+        user = self.find_user_by_name(username, users)
         setattr(user, field, new_data)
+        self.save_changes(users)
 
     def delete_user(self, username):
+        users = self.get_users()
         user = self.find_user_by_name(username)
-        self.users.remove(user)
+        users.remove(user)
+        self.save_changes(users)
 
-    def save_changes(self):
+    def save_changes(self, users):
         user_data = []
-        for user in self.users:
-            user_data.append(self.delimiter_data_user.join(user))
+        for user in users:
+            user_data.append(self.convert_to_string(user))
         users_str = self.delimiter_users.join(user_data)
         common.files.overwrite_file(self.path_storage, users_str)
 
@@ -76,3 +82,10 @@ class FileUserDAO(UserDAO):
         role = array[4]
         user = User(name, password, enabled, password_restriction, role)
         return user
+
+    def convert_to_string(self, user):
+        user_str = user.name + self.delimiter_data_user + user.password + self.delimiter_data_user + str(
+            int(user.enabled)) + self.delimiter_data_user + str(int(
+            user.password_restriction)) + self.delimiter_data_user + user.role
+
+        return user_str

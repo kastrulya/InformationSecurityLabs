@@ -6,9 +6,9 @@ __author__ = 'bubble'
 class UserDAO():
     __metaclass__ = ABCMeta
 
-    @abstractmethod
-    def start_connection(self):
-        raise NotImplementedError()
+    # @abstractmethod
+    # def start_connection(self):
+    #     raise NotImplementedError()
 
     @abstractmethod
     def get_users(self):
@@ -30,5 +30,6 @@ class UserDAO():
     def find_user_by_name(self, username):
         raise NotImplementedError()
 
+    @abstractmethod
     def save_changes(self):
         raise NotImplementedError()
