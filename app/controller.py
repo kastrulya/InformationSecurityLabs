@@ -1,4 +1,5 @@
 # import user_service
+from app import crypto
 import session
 import user_service
 import view
@@ -13,7 +14,12 @@ class Controller:
         # self.user_service = datastore.Datastore()
 
     def start(self):
-        self.app_view.authorize_form("Authorization", self.auth)
+        try:
+            crypto.check_right()
+            self.app_view.authorize_form("Authorization", self.auth)
+        except ValueError as err:
+            self.app_view.show_message(err.message)
+            self.app_view.root.destroy()
 
     def auth(self, event=""):
         data = self.app_view.get_auth_data()

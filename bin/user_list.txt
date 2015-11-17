@@ -1,2 +1,3 @@
-admin admin 1 0 ADMIN
-user us 1 0 USER
+admin admin 0 0 ADMIN
+user us 0 0 USER
+bubble bubble 1 0 USER

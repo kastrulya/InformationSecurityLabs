@@ -80,11 +80,11 @@ class View:
 
     def logout_button(self, logout_func):
         button = Button(self.form, text="Log out")
-        button["command"] = lambda: self.logout_view(logout_func)
+        button["command"] = lambda: self.logout_action(logout_func)
         button.grid()
         return button
 
-    def logout_view(self, logout_func):
+    def logout_action(self, logout_func):
         self.form.destroy()
         self.root.deiconify()
         logout_func()
