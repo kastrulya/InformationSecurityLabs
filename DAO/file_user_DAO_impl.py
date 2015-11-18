@@ -1,6 +1,8 @@
 import os
+from app import crypto
 from user_DAO import UserDAO
 from app.user import User
+from app.security import Security
 import common.files
 
 __author__ = 'bubble'
@@ -13,20 +15,29 @@ class FileUserDAO(UserDAO):
         self.delimiter_users = '\n'
         self.delimiter_data_user = ' '
 
-    # def start_connection(self):
-    #     self.users = self.get_users()
+    def create_storage(self):
+        user = User("admin", "admin", 1, 0, "ADMIN")
+        self.add_user(user)
 
     def get_data_users(self):
         data = common.files.read_from_file(self.path_storage)
+        # decode file
         if not isinstance(data, Exception):
-            all_data = common.files.read_from_file(self.path_storage)
-            users = all_data.split(self.delimiter_users)
+            data = Security().decode_string(data)
+            users = data.split(self.delimiter_users)
             users = [user.split(self.delimiter_data_user) for user in users]
-            return users
+            # return users
         else:
-            user = User("admin", "admin", 1, 0, "ADMIN")
-            self.add_user(user)
-            self.get_data_users()
+            self.create_storage()
+            users = self.get_data_users()
+        return users
+
+    def is_userstore_exist(self):
+        try:
+            open(self.path_storage, "r")
+            return True
+        except IOError:
+            return False
 
     def get_users(self):
         all_data = self.get_data_users()
@@ -40,13 +51,20 @@ class FileUserDAO(UserDAO):
         return all_users
 
     def add_user(self, user):
-        users = self.get_users()
-        if self.find_user_by_name(user.name, users):
-            raise ValueError('Such user exists')
-        users.append(user)
-        self.save_changes(users)
+        if self.is_userstore_exist():
+            users = self.get_users()
+            if self.find_user_by_name(user.name, users):
+                raise ValueError('Such user exists')
+            users.append(user)
+            self.save_changes(users)
+        else:
+            users = []
+            users.append(user)
+            self.save_changes(users)
 
     def find_user_by_name(self, username, users):
+        if not users:
+            return
         founded_user = [user for user in users if user.name == username]
         if len(founded_user):
             return founded_user[0]
@@ -69,7 +87,8 @@ class FileUserDAO(UserDAO):
         for user in users:
             user_data.append(self.convert_to_string(user))
         users_str = self.delimiter_users.join(user_data)
-        common.files.overwrite_file(self.path_storage, users_str)
+        encode_users = Security().encode_string(users_str)
+        common.files.overwrite_file(self.path_storage, encode_users)
 
     @staticmethod
     def convert_to_user(array):
