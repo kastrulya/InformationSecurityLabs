@@ -26,7 +26,7 @@ class View:
         label.grid(columnspan=2)
 
         self.root.name = Entry(self.root)
-        self.root.password = Entry(self.root)
+        self.root.password = Entry(self.root, show="*")
 
         self.root.count = 0
         self.root.current_user = ""

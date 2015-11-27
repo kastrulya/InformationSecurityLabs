@@ -1,18 +1,20 @@
-# import datastore
 from DAO import file_user_DAO_impl
+from DAO import mysql_user_DAO_impl
 from user import User
 
 __author__ = 'bubble'
 
 
-user_store = file_user_DAO_impl.FileUserDAO()
+# user_store = file_user_DAO_impl.FileUserDAO()
 # user_store.start_connection()
+
+user_store = mysql_user_DAO_impl.MySQLUserDAO('admin', 'admin')
 
 
 def authorize(username="", password=""):
     users = user_store.get_users()
-    if user_store.find_user_by_name(username, users):
-        find_user = user_store.find_user_by_name(username, users)
+    if user_store.find_user_by_name(username):
+        find_user = user_store.find_user_by_name(username)
         if find_user.password == password:
             return find_user
         else:

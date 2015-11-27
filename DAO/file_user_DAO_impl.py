@@ -62,7 +62,8 @@ class FileUserDAO(UserDAO):
             users.append(user)
             self.save_changes(users)
 
-    def find_user_by_name(self, username, users):
+    def find_user_by_name(self, username):
+        users = self.get_users()
         if not users:
             return
         founded_user = [user for user in users if user.name == username]

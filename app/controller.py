@@ -11,7 +11,6 @@ class Controller:
     def __init__(self, root):
         self.current_session = session.Session()
         self.app_view = view.View(root)
-        # self.user_service = datastore.Datastore()
 
     def start(self):
         try:

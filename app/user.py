@@ -16,3 +16,12 @@ class User:
                str(int(self.enabled)) + delimiter_data + str(
             int(self.password_restriction)) \
                + delimiter_data + self.role
+
+    def to_array(self):
+        arr = []
+        arr.append(self.name)
+        arr.append(self.password)
+        arr.append(str(int(self.enabled)))
+        arr.append(str(int(self.password_restriction)))
+        arr.append(self.role)
+        return arr
