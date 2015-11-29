@@ -15,10 +15,11 @@ class MySQLUserDAO(UserDAO):
         self.user = user
         self.password = password
 
+#TODO find_all
     def get_users(self):
         sql = "SELECT name, " \
               "AES_DECRYPT(password, '" + Security().key + "'), " \
-              "enabled, password_restriction, role FROM "\
+                                                           "enabled, password_restriction, role FROM " \
               + self.database + '.' + self.users_table
 
         data = self.execute_sql(sql)
@@ -29,7 +30,7 @@ class MySQLUserDAO(UserDAO):
             self.get_users()
         return all_users
 
-
+    #TODO save\persist
     def add_user(self, user):
         sql = "INSERT INTO " + self.users_table + " VALUES (" + \
               self.user_password_cipher_string(user) + ")"
@@ -37,20 +38,19 @@ class MySQLUserDAO(UserDAO):
 
         self.execute_sql(sql)
 
-
+    #TODO update user
     def update_user_field(self, username, field, new_data):
         if field != 'password':
-            sql = "UPDATE User SET  " + field + " = " + "'" + str(int(new_data)) + "'" + " WHERE name = '" + username + "'"
+            sql = "UPDATE User SET  " + field + " = " + "'" + str(
+                int(new_data)) + "'" + " WHERE name = '" + username + "'"
         else:
             cipher_password = "AES_ENCRYPT('" + new_data + "', '" + Security().key + "')"
             sql = "UPDATE User SET  " + field + " = " + cipher_password + " WHERE name = '" + username + "'"
         self.execute_sql(sql)
 
-
     def delete_user(self, username):
         sql = "DELETE FROM " + self.users_table + " WHERE name = '" + username + "'"
         self.execute_sql(sql)
-
 
     def find_user_by_name(self, username):
         all_users = self.get_users()
@@ -59,11 +59,6 @@ class MySQLUserDAO(UserDAO):
             return founded_user[0]
         else:
             return
-
-
-    def save_changes(self):
-        raise NotImplementedError()
-
 
     def execute_sql(self, sql):
         # Open database connection
@@ -86,13 +81,11 @@ class MySQLUserDAO(UserDAO):
         # disconnect from server
         db.close()
 
-
     @staticmethod
     def user_to_string(user):
         user_arr = user.to_array()
         user_str = "\"" + "\",\"".join(user_arr) + "\""
         return user_str
-
 
     @staticmethod
     def user_password_cipher_string(user):

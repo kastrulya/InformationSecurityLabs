@@ -30,6 +30,6 @@ class UserDAO():
     def find_user_by_name(self, username):
         raise NotImplementedError()
 
-    @abstractmethod
-    def save_changes(self):
-        raise NotImplementedError()
+    # @abstractmethod
+    # def save_changes(self):
+    #     raise NotImplementedError()
